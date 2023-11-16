@@ -4,7 +4,8 @@ const { connect, default: mongoose } = require("mongoose");
 const app = express();
 app.use(express.json());
 
-mongoose.connect(MONGODB_URL);
+console.log(process.env.MONGODB_URL);
+mongoose.connect(process.env.MONGODB_URL);
 
 const userRoutes = require("./routes/user");
 const offerRoutes = require("./routes/offer");

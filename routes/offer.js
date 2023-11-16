@@ -1,16 +1,14 @@
-require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const isAuthenticated = require("../middlewares/isAuthenticated");
 const fileUpload = require("express-fileupload");
 const Offer = require("../models/Offer");
-const mongoose = require("mongoose");
 
 const cloudinary = require("cloudinary").v2;
 cloudinary.config({
-  cloud_name: CLOUDINARY_NAME,
-  api_key: CLOUDINARY_PUBLIC_KEY,
-  api_secret: CLOUDINARY_SECRET_KEY,
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_PUBLIC_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET_KEY,
 });
 
 const convertToBase64 = (file) => {
