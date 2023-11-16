@@ -4,7 +4,7 @@ const { connect, default: mongoose } = require("mongoose");
 const app = express();
 app.use(express.json());
 
-mongoose.connect("mongodb://localhost:27017/Vinted");
+mongoose.connect(MONGODB_URL);
 
 const userRoutes = require("./routes/user");
 const offerRoutes = require("./routes/offer");
@@ -24,6 +24,6 @@ app.all("*", (req, res) => {
   return res.status(404).json("Not found");
 });
 
-app.listen(3000, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log("Server has started 🚀");
 });
