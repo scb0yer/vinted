@@ -1,7 +1,12 @@
 require("dotenv").config();
 const express = require("express");
 const { connect, default: mongoose } = require("mongoose");
+
+const express = require("express");
+const cors = require("cors");
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 
 console.log(process.env.MONGODB_URL);
