@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 console.log(process.env.MONGODB_URL);
-mongoose.connect(process.env.MONGODB_URL);
+mongoose.connect(process.env.MONGODB_URL + "Vinted");
 
 const userRoutes = require("./routes/user");
 const offerRoutes = require("./routes/offer");
