@@ -21,29 +21,9 @@ router.post(
   fileUpload(),
   async (req, res) => {
     try {
-      const {
-        _id,
-        title,
-        description,
-        price,
-        condition,
-        city,
-        brand,
-        size,
-        color,
-      } = req.body;
-      if (req.files) {
-        const picturesToUpload = req.files.pictures;
-        const arrayOfFilesUrl = [];
-        for (let i = 0; i < picturesToUpload.length; i++) {
-          const picture = picturesToUpload[i];
-          const result = await cloudinary.uploader.upload(
-            convertToBase64(picture),
-            { folder: "Vinted" }
-          );
-          arrayOfFilesUrl.push(result.secure_url);
-        }
-      }
+      const { title, description, price, condition, city, brand, size, color } =
+        req.body;
+
       const newOffer = new Offer({
         product_name: title,
         product_description: description,
@@ -55,10 +35,22 @@ router.post(
           { emplacement: city },
           { couleur: color },
         ],
-        // product_image: arrayOfFilesUrl,
         owner: req.userFound,
       });
       await newOffer.save();
+      if (req.files) {
+        const picturesToUpload = req.files.pictures;
+        const arrayOfFilesUrl = [];
+        for (let i = 0; i < picturesToUpload.length; i++) {
+          const picture = picturesToUpload[i];
+          const result = await cloudinary.uploader.upload(
+            convertToBase64(picture),
+            { folder: `/vinted/offers/${newOffer._id}` }
+          );
+          arrayOfFilesUrl.push(result.secure_url);
+        }
+        newOffer.product_image = arrayOfFilesUrl;
+      }
       console.log("new offer successfully added 🤌");
       return res.status(200).json(newOffer);
     } catch (error) {
