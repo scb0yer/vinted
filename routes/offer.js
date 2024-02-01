@@ -39,7 +39,8 @@ router.post(
       });
       await newOffer.save();
       if (req.files) {
-        const picturesToUpload = req.files.pictures;
+        console.log(req.files);
+        const picturesToUpload = req.files.picturesToUpload;
         const arrayOfFilesUrl = [];
         for (let i = 0; i < picturesToUpload.length; i++) {
           const picture = picturesToUpload[i];
@@ -50,7 +51,9 @@ router.post(
           arrayOfFilesUrl.push(result.secure_url);
         }
         newOffer.product_image = arrayOfFilesUrl;
+        await newOffer.save();
       }
+      console.log(result.secure_url);
       console.log("new offer successfully added 🤌");
       return res.status(200).json(newOffer);
     } catch (error) {
