@@ -82,11 +82,11 @@ router.get("/offers", async (req, res) => {
     const queries = req.query.split("&");
     for (let i = 0; i < queries.length; i++) {
       let query = queries[i].split("=");
-      if ((query[0] = "title")) {
+      if ((query[0] = "title" && query[1])) {
         filter.product_name = new RegExp(query[1], "i");
-      } else if ((query[0] = "priceMax")) {
+      } else if ((query[0] = "priceMax" && query[1])) {
         filter.product_price.$lt = query[1];
-      } else if ((query[0] = "priceMin")) {
+      } else if ((query[0] = "priceMin" && query[1])) {
         filter.product_price.$gt = query[1];
       }
     }
