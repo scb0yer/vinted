@@ -79,32 +79,35 @@ router.get("/offers", async (req, res) => {
       page = req.query.page;
     }
     let sorting = 1;
-    const queries = req.query.split("&");
-    for (let i = 0; i < queries.length; i++) {
-      let query = queries[i].split("=");
-      if ((query[0] = "title" && query[1])) {
-        filter.product_name = new RegExp(query[1], "i");
-      } else if ((query[0] = "priceMax" && query[1])) {
-        filter.product_price.$lt = query[1];
-      } else if ((query[0] = "priceMin" && query[1])) {
-        filter.product_price.$gt = query[1];
-      }
-    }
-    // const keys = Object.keys(req.query);
-    // for (let i = 0; i < keys.length; i++) {
-    //   if (keys[i] === "title") {
-    //     filter.product_name = new RegExp(req.query[keys[i]], "i");
-    //   }
-    //   if (keys[i] === "brand") {
-    //     filter.product_details.brand = new RegExp(req.query[keys[i]], "i");
-    //   }
-    //   if (keys[i] === "priceMin") {
-    //     filter.product_price.$gt = req.query[keys[i]];
-    //   }
-    //   if (keys[i] === "priceMax") {
-    //     filter.product_price.$lt = req.query[keys[i]];
+    // if (req.query) {
+    //   const queryList = req.query;
+    //   const queries = queryList.split("&");
+    //   for (let i = 0; i < queries.length; i++) {
+    //     let query = queries[i].split("=");
+    //     if ((query[0] = "title" && query[1])) {
+    //       filter.product_name = new RegExp(query[1], "i");
+    //     } else if ((query[0] = "priceMax" && query[1])) {
+    //       filter.product_price.$lt = query[1];
+    //     } else if ((query[0] = "priceMin" && query[1])) {
+    //       filter.product_price.$gt = query[1];
+    //     }
     //   }
     // }
+    const keys = Object.keys(req.query);
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i] === "title") {
+        filter.product_name = new RegExp(req.query[keys[i]], "i");
+      }
+      if (keys[i] === "brand") {
+        filter.product_details.brand = new RegExp(req.query[keys[i]], "i");
+      }
+      if (keys[i] === "priceMin") {
+        filter.product_price.$gt = req.query[keys[i]];
+      }
+      if (keys[i] === "priceMax") {
+        filter.product_price.$lt = req.query[keys[i]];
+      }
+    }
     if (req.query.sort) {
       if (req.query.sort === "price-desc") {
         sorting = -1;
@@ -114,7 +117,7 @@ router.get("/offers", async (req, res) => {
     }
     console.log(filter);
     const offers = await Offer.find(filter)
-      .select("product_name product_price -_id")
+      .select("product_name product_price")
       .sort({ product_price: sorting })
       .limit(limit)
       .skip((page - 1) * limit);
