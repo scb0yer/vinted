@@ -42,10 +42,18 @@ router.post(
         console.log(req.files);
         const picturesToUpload = req.files.picturesToUpload;
         const arrayOfFilesUrl = [];
-        for (let i = 0; i < picturesToUpload.length; i++) {
-          const picture = picturesToUpload[i];
+        if (picturesToUpload.length) {
+          for (let i = 0; i < picturesToUpload.length; i++) {
+            const picture = picturesToUpload[i];
+            const result = await cloudinary.uploader.upload(
+              convertToBase64(picture),
+              { folder: `/vinted/offers/${newOffer._id}` }
+            );
+            arrayOfFilesUrl.push(result.secure_url);
+          }
+        } else {
           const result = await cloudinary.uploader.upload(
-            convertToBase64(picture),
+            convertToBase64(picturesToUpload),
             { folder: `/vinted/offers/${newOffer._id}` }
           );
           arrayOfFilesUrl.push(result.secure_url);
@@ -53,7 +61,6 @@ router.post(
         newOffer.product_image = arrayOfFilesUrl;
         await newOffer.save();
       }
-      console.log(result.secure_url);
       console.log("new offer successfully added 🤌");
       return res.status(200).json(newOffer);
     } catch (error) {
@@ -72,21 +79,32 @@ router.get("/offers", async (req, res) => {
       page = req.query.page;
     }
     let sorting = 1;
-    const keys = Object.keys(req.query);
-    for (let i = 0; i < keys.length; i++) {
-      if (keys[i] === "title") {
-        filter.product_name = new RegExp(req.query[keys[i]], "i");
-      }
-      if (keys[i] === "brand") {
-        filter.product_details.brand = new RegExp(req.query[keys[i]], "i");
-      }
-      if (keys[i] === "priceMin") {
-        filter.product_price.$gt = req.query[keys[i]];
-      }
-      if (keys[i] === "priceMax") {
-        filter.product_price.$lt = req.query[keys[i]];
+    const queries = req.query.split("&");
+    for (let i = 0; i < queries.length; i++) {
+      let query = queries[i].split("=");
+      if ((query[0] = "title")) {
+        filter.product_name = new RegExp(query[1], "i");
+      } else if ((query[0] = "priceMax")) {
+        filter.product_price.$lt = query[1];
+      } else if ((query[0] = "priceMin")) {
+        filter.product_price.$gt = query[1];
       }
     }
+    // const keys = Object.keys(req.query);
+    // for (let i = 0; i < keys.length; i++) {
+    //   if (keys[i] === "title") {
+    //     filter.product_name = new RegExp(req.query[keys[i]], "i");
+    //   }
+    //   if (keys[i] === "brand") {
+    //     filter.product_details.brand = new RegExp(req.query[keys[i]], "i");
+    //   }
+    //   if (keys[i] === "priceMin") {
+    //     filter.product_price.$gt = req.query[keys[i]];
+    //   }
+    //   if (keys[i] === "priceMax") {
+    //     filter.product_price.$lt = req.query[keys[i]];
+    //   }
+    // }
     if (req.query.sort) {
       if (req.query.sort === "price-desc") {
         sorting = -1;
