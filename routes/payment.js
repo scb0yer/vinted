@@ -10,7 +10,7 @@ router.post("/payment", async (req, res) => {
       amount: (req.body.amount * 100).toFixed(0),
       currency: "eur",
       description: `Paiement vinted pour : ${req.body.title}`,
-      source: req.body.token,
+      source: req.body.stripeToken,
     });
     res.json({ status });
   } catch (error) {
