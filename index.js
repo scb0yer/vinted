@@ -13,6 +13,7 @@ const offerRoutes = require("./routes/offer");
 
 app.use(userRoutes);
 app.use(offerRoutes);
+app.use(paymentRoutes);
 
 app.get("/", (req, res) => {
   try {
