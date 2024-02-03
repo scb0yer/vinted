@@ -117,11 +117,15 @@ router.get("/offers", async (req, res) => {
     }
     console.log(filter);
     const offers = await Offer.find(filter)
-      .select("product_name product_price")
+      .populate({
+        path: "owner",
+        select: "account",
+      })
       .sort({ product_price: sorting })
       .limit(limit)
       .skip((page - 1) * limit);
-    return res.status(200).json(offers);
+    const count = await Offer.countDocuments(filter);
+    return res.status(200).json({ count: count, offers: offers });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
