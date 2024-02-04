@@ -73,7 +73,7 @@ router.get("/offers", async (req, res) => {
   try {
     const filter = {};
     filter.product_price = { $gt: 0 };
-    const limit = 20;
+    const limit = 15;
     let page = 1;
     if (req.query.page) {
       page = req.query.page;
