@@ -1,5 +1,17 @@
 const express = require("express");
 const router = express.Router();
+const fileUpload = require("express-fileupload");
+
+const cloudinary = require("cloudinary").v2;
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_PUBLIC_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET_KEY,
+});
+
+const convertToBase64 = (file) => {
+  return `data:${file.mimetype};base64,${file.data.toString("base64")}`;
+};
 
 const User = require("../models/User");
 
@@ -67,6 +79,28 @@ router.post("/user/login", async (req, res) => {
     } else {
       return res.status(401).json({ message: "Mot de passe incorrect 😾" });
     }
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/user/addAvatar", fileUpload(), async (req, res) => {
+  try {
+    const user_id = req.body._id;
+    const avatar = req.files.avatar;
+    const result = await cloudinary.uploader.upload(convertToBase64(avatar), {
+      folder: `/vinted/avatars/${user_id}`,
+    });
+    console.log(result);
+
+    const user = await User.findByIdAndUpdate(user_id, {
+      account: {
+        avatar: result.secure_url,
+      },
+    });
+    await user.save();
+    console.log("l'image est bien uploadée");
+    res.status(200).json(user);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
