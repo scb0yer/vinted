@@ -44,11 +44,12 @@ router.post("/user/signup", async (req, res) => {
     console.log(`New User ${req.body.username} created 👏`);
     await newUser.save();
     if (req.files) {
-      const pictureToUpload = req.files.account.avatar;
-      const result = await cloudinary.uploader.upload(
-        convertToBase64(pictureToUpload),
-        { folder: `/vinted/avatars/${newUser._id}` }
-      );
+      console.log(req.files);
+      const avatar = req.files.avatar;
+      const result = await cloudinary.uploader.upload(convertToBase64(avatar), {
+        folder: `/vinted/avatars/${user_id}`,
+      });
+      console.log(result);
       newUser.account.avatar = result.secure_url;
     }
     return res.status(200).json({
