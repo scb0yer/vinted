@@ -95,6 +95,7 @@ router.post("/user/addAvatar", fileUpload(), async (req, res) => {
 
     const user = await User.findByIdAndUpdate(user_id, {
       account: {
+        username: username,
         avatar: result.secure_url,
       },
     });
